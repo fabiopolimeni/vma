@@ -10,6 +10,8 @@ if(PROJECT_IS_TOP_LEVEL)
     include_directories(${Vulkan_INCLUDE_DIR})
 endif()
 
+include(CMakeDependentOption)
+
 # VulkanMemoryAllocator contains an sample application which is not built by default
 option(VMA_BUILD_SAMPLE "Build VulkanMemoryAllocator sample application" OFF)
 option(VMA_BUILD_SAMPLE_SHADERS "Build VulkanMemoryAllocator sample application's shaders" OFF)
@@ -31,6 +33,16 @@ message(STATUS "VMA_DEBUG_INITIALIZE_ALLOCATIONS = ${VMA_DEBUG_INITIALIZE_ALLOCA
 message(STATUS "VMA_DEBUG_GLOBAL_MUTEX = ${VMA_DEBUG_GLOBAL_MUTEX}")
 message(STATUS "VMA_DEBUG_DONT_EXCEED_MAX_MEMORY_ALLOCATION_COUNT = ${VMA_DEBUG_DONT_EXCEED_MAX_MEMORY_ALLOCATION_COUNT}")
 
+cmake_dependent_option(
+    VMA_BUILD_STATIC_LIBRARY  # option variable
+    "Build static library"    # description
+    ON                        # default value if exposed; user can override
+    "NOT BUILD_SHARED_LIBS"   # condition to expose option
+    OFF                       # value if not exposed; user can't override
+)
+    
+message(STATUS "VMA_BUILD_STATIC_LIBRARY = ${VMA_BUILD_STATIC_LIBRARY}")
+    
 if(VMA_BUILD_SAMPLE)
     set(VMA_BUILD_SAMPLE_SHADERS ON)
 endif()

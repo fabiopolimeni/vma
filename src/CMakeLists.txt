@@ -2,7 +2,14 @@ set(CMAKE_DEBUG_POSTFIX d)
 set(CMAKE_RELWITHDEBINFO_POSTFIX rd)
 set(CMAKE_MINSIZEREL_POSTFIX s)
 
-add_library(VulkanMemoryAllocator
+# set build type based on dependent option
+if (VMA_BUILD_STATIC_LIBRARY)
+  set(VMA_BUILD_STATIC_LIBRARY STATIC)
+else ()
+  set(VMA_BUILD_STATIC_LIBRARY SHARED)
+endif ()
+
+add_library(VulkanMemoryAllocator ${VMA_BUILD_STATIC_LIBRARY}
     VmaUsage.cpp
     VmaUsage.h
     ${PROJECT_SOURCE_DIR}/include/vk_mem_alloc.h
@@ -11,6 +18,9 @@ add_library(VulkanMemoryAllocator
 if (MSVC)
     # Provides MSVC users nicer debugging support
     target_sources(VulkanMemoryAllocator PRIVATE ${CMAKE_CURRENT_LIST_DIR}/vk_mem_alloc.natvis)
+    if (NOT ${VMA_BUILD_STATIC_LIBRARY})
+        set_target_properties(VulkanMemoryAllocator PROPERTIES WINDOWS_EXPORT_ALL_SYMBOLS TRUE)
+    endif()
 endif()
 
 set_target_properties(
